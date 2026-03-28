@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/triangles.dir/link.d CMakeFiles/triangles.dir/triangles.cpp.o -o triangles  -lSDL3

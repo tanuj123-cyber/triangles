@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/tanujs/Projects/3DSoftwareRendering/triangles/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,3 @@
+/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles/triangles.dir
+/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles/edit_cache.dir
+/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles/rebuild_cache.dir

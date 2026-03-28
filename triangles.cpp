@@ -8,11 +8,12 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
+#include "Matrix4f.h"
 
 using namespace std;
 
 struct vertex {
-  int x,y;
+  int x,y,z;
 };
 
 class ScanLineRasterization {
@@ -104,9 +105,9 @@ int main(int argc, char *argv[]){
    // std::vector<uint32_t> framebuffer(width * height);
     uint32_t* framebuffer = new uint32_t[width*height]; 
     // triangle vertices
-    vertex minVert {100, 100};
-    vertex midVert {150, 200};
-    vertex maxVert {80, 300}; 
+    vertex minVert {-1, -1, 0};
+    vertex midVert {-1, 1, 0};
+    vertex maxVert {1, -1, 0}; 
 
     float x_diff1 = maxVert.x - minVert.x;
     float y_diff1 = maxVert.y - minVert.y;
@@ -118,6 +119,10 @@ int main(int argc, char *argv[]){
     
     ScanLineRasterization triangle(width, height);
 
+    auto prevTime = std::chrono::high_resolution_clock::now();
+    Matrix4f projection;
+    projection = projection.InitPerspective(70, width * 1.0/(height * 1.0), 0.1f, 1000.0);
+    float rotCounter = 0.0f;
     while(1){
       SDL_PollEvent(&event);
       if (event.type == SDL_EVENT_QUIT){
@@ -126,7 +131,23 @@ int main(int argc, char *argv[]){
       
      //framebuffer.data() returns pointer to the first element of the vector, of type uint32_t*, address at &framebuffer[0]
       
+      auto currTime = std::chrono::high_resolution_clock::now();
+
+      float delta = std::chrono::duration<float>(currTime - prevTime).count();
+      prevTime = currTime;
+
+      rotCounter += delta;
+ //insert matrix rotations translations etc. here 
+ 
+      Matrix4f rotation;
+      rotation.InitRotation(0.0f, rotCounter, 0.0f);
+      Matrix4f translation;
+      rotation.InitTranslation(0.0f, 0.0f, 3.0f);
+      Matrix4f transformation = projection.matMultiply(translation.matMultiply(rotation));
+
       SDL_RenderClear(renderer); //clear gpu buffer
+                                 //
+      //transform vertices
       triangle.createTriangle(minVert, midVert, maxVert, triangle_area >= 0);
       triangle.FillTriangle(framebuffer, width, height);
       //update cpu buffer here. aka function call

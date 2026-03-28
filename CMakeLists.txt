@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 
-add_executable(triangles triangles.cpp)
+add_executable(triangles triangles.cpp Matrix4f.cpp)
 
 # Include SDL3 headers
 target_include_directories(triangles PRIVATE ${SDL3_INCLUDE_DIRS})

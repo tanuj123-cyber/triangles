@@ -85,12 +85,12 @@ clean: CMakeFiles/triangles.dir/clean
 CMakeFiles/triangles.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles --progress-num=1,2,3 "Built target triangles"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles --progress-num=1,2,3,4 "Built target triangles"
 .PHONY : CMakeFiles/triangles.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/triangles.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/triangles.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles 0
 .PHONY : CMakeFiles/triangles.dir/rule
@@ -102,7 +102,7 @@ triangles: CMakeFiles/triangles.dir/rule
 # codegen rule for target.
 CMakeFiles/triangles.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles --progress-num=1,2,3 "Finished codegen for target triangles"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/tanujs/Projects/3DSoftwareRendering/triangles/build/CMakeFiles --progress-num=1,2,3,4 "Finished codegen for target triangles"
 .PHONY : CMakeFiles/triangles.dir/codegen
 
 # clean rule for target.

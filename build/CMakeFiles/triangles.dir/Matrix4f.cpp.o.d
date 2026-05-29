@@ -1,5 +1,5 @@
-CMakeFiles/triangles.dir/triangles.cpp.o: \
- /home/tanujs/Projects/3DSoftwareRendering/triangles/triangles.cpp \
+CMakeFiles/triangles.dir/Matrix4f.cpp.o: \
+ /home/tanujs/Projects/3DSoftwareRendering/triangles/Matrix4f.cpp \
  /usr/include/stdc-predef.h /usr/include/SDL3/SDL.h \
  /usr/include/SDL3/SDL_stdinc.h /usr/include/SDL3/SDL_platform_defines.h \
  /usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1/include/stdarg.h \
@@ -197,8 +197,6 @@ CMakeFiles/triangles.dir/triangles.cpp.o: \
  /usr/include/c++/16.1.1/bits/chrono.h /usr/include/c++/16.1.1/ratio \
  /usr/include/c++/16.1.1/limits /usr/include/c++/16.1.1/ctime \
  /usr/include/c++/16.1.1/bits/parse_numbers.h \
- /home/tanujs/Projects/3DSoftwareRendering/triangles/Matrix4f.h \
- /home/tanujs/Projects/3DSoftwareRendering/triangles/Vertex4.h \
  /usr/include/c++/16.1.1/cmath /usr/include/math.h \
  /usr/include/bits/math-vector.h /usr/include/bits/libm-simd-decl-stubs.h \
  /usr/include/bits/flt-eval-method.h /usr/include/bits/fp-logb.h \
@@ -218,4 +216,5 @@ CMakeFiles/triangles.dir/triangles.cpp.o: \
  /usr/include/c++/16.1.1/tr1/poly_hermite.tcc \
  /usr/include/c++/16.1.1/tr1/poly_laguerre.tcc \
  /usr/include/c++/16.1.1/tr1/riemann_zeta.tcc \
- /usr/include/c++/16.1.1/cassert /usr/include/assert.h
+ /home/tanujs/Projects/3DSoftwareRendering/triangles/Vertex4.h \
+ /home/tanujs/Projects/3DSoftwareRendering/triangles/Matrix4f.h

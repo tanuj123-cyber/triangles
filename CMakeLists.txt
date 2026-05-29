@@ -5,12 +5,13 @@ project(triangles LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-g")
 
 # Use pkg-config to find SDL3
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL3 REQUIRED sdl3)
 
-add_executable(triangles triangles.cpp Matrix4f.cpp)
+add_executable(triangles triangles.cpp Matrix4f.cpp Vertex4.cpp)
 
 # Include SDL3 headers
 target_include_directories(triangles PRIVATE ${SDL3_INCLUDE_DIRS})

@@ -9,38 +9,87 @@
 #include <vector>
 #include <chrono>
 #include "Matrix4f.h"
+#include "Vertex4.h"
+
+#include <cassert>
+
+#define DEBUG 1
+
+#if DEBUG
+#define _breakpoint() __asm__ volatile ("int $3\n")
+#define _cond_break(cond) if(cond) __asm__ volatile ("int $3\n")
+#else
+#define _breakpoint() 
+#define _cond_break(cond) 
+#endif
 
 using namespace std;
 
 struct vertex {
-  int x,y,z;
+  float x,y,z,w;
 };
 
 class ScanLineRasterization {
-  
+  int width;
   int height;
   int* scanBuffer;
 
   public: ScanLineRasterization(int width, int height): 
-    height(height) {
+    height(height), width(width) {
       scanBuffer = new int[height * 2]();
     }
 
 ~ScanLineRasterization() {
     delete[] scanBuffer;
 }
-  void createTriangle(vertex minVert, vertex midVert, vertex maxVert, int side){
+  void createTriangle(Vertex4 minVer, Vertex4 midVer, Vertex4 maxVer, int side){
+    Matrix4f screenSpaceTransform;
+    screenSpaceTransform = screenSpaceTransform.InitScreenSpaceTransform(width/2.0, height/2.0);
+
+    Vertex4 minVert = screenSpaceTransform.Transform(minVer).PerspectiveDivide();
+    Vertex4 midVert = screenSpaceTransform.Transform(midVer).PerspectiveDivide();
+    Vertex4 maxVert = screenSpaceTransform.Transform(maxVer).PerspectiveDivide();
+
+    _breakpoint();
+
+   if (maxVert.GetY() < midVert.GetY()) {
+     Vertex4 temp = maxVert;
+     maxVert = midVert;
+     midVert = temp;
+   }
+   if (midVert.GetY() < minVert.GetY()){
+     Vertex4 temp = midVert;
+     midVert = minVert;
+     minVert = temp;
+   }
+   if (maxVert.GetY() < midVert.GetY()){
+     Vertex4 temp = maxVert;
+     maxVert = midVert;
+     midVert = temp;
+   }
+
+
+
     std::fill(scanBuffer, scanBuffer + height * 2, 0);
-    convertToLine(minVert, maxVert, side);
-    convertToLine(minVert, midVert, 1 - side);
-    convertToLine(midVert, maxVert, 1 - side);
+    vertex minV = {minVert.GetX(), minVert.GetY(), minVert.GetZ(), minVert.GetW()};
+    vertex midV = {midVert.GetX(), midVert.GetY(), midVert.GetZ(), midVert.GetW()};
+    vertex maxV = {maxVert.GetX(), maxVert.GetY(), maxVert.GetZ(), maxVert.GetW()};
+    convertToLine(minV, maxV, side);
+    convertToLine(minV, midV, !side);
+    convertToLine(midV, maxV, !side);
   }
 
   void convertToLine(vertex minY, vertex maxY, int side) {
+
+
+    _breakpoint();
+
+    printf("-------------------\n");
+
     int yDist = maxY.y - minY.y;
     int xDist = maxY.x - minY.x;
 
-    if (yDist <= 0){
+    if (yDist < 0){
       return;
     }
 
@@ -49,19 +98,28 @@ class ScanLineRasterization {
 
     for (int i = minY.y; i < maxY.y; i++){
       scanBuffer[i * 2 + side] = (int) currX;
+
+      printf("%d ", currX);
+
+
       currX += xStep;
     }
+      printf("\n");
   }
 
   public: void FillTriangle(uint32_t *pixels, int w, int h){
 
     //clear cpu buffer
-    std::fill(pixels, pixels + w * h, 0x00000000);
+    std::fill(pixels, pixels + w * h, 0xFF00FFFF);
     
     //iterate through scanBuffer, fill out each row of pixels accordingly
     for (int i = 0; i < h; i ++){
+      //_breakpoint();
       int xMin = scanBuffer[i*2];
       int xMax = scanBuffer[i*2 + 1];
+
+      //assert(xMin < xMax);
+
       
       for (int j = xMin; j < xMax; j++) {
         pixels[i * w + j] = 0xFFFFFFFF;
@@ -106,8 +164,11 @@ int main(int argc, char *argv[]){
     uint32_t* framebuffer = new uint32_t[width*height]; 
     // triangle vertices
     vertex minVert {-1, -1, 0};
-    vertex midVert {-1, 1, 0};
+    vertex midVert {0, 1, 0};
     vertex maxVert {1, -1, 0}; 
+    Vertex4 minYVert(minVert.x, minVert.y, minVert.z, 1.0);
+    Vertex4 midYVert(midVert.x, midVert.y, midVert.z, 1.0);
+    Vertex4 maxYVert(maxVert.x, maxVert.y, maxVert.z, 1.0);
 
     float x_diff1 = maxVert.x - minVert.x;
     float y_diff1 = maxVert.y - minVert.y;
@@ -123,8 +184,10 @@ int main(int argc, char *argv[]){
     Matrix4f projection;
     projection = projection.InitPerspective(70, width * 1.0/(height * 1.0), 0.1f, 1000.0);
     float rotCounter = 0.0f;
+
     while(1){
       SDL_PollEvent(&event);
+
       if (event.type == SDL_EVENT_QUIT){
         return 0;
       }
@@ -140,15 +203,16 @@ int main(int argc, char *argv[]){
  //insert matrix rotations translations etc. here 
  
       Matrix4f rotation;
-      rotation.InitRotation(0.0f, rotCounter, 0.0f);
+      rotation = rotation.InitRotation(0.0f, rotCounter, 0.0f);
       Matrix4f translation;
-      rotation.InitTranslation(0.0f, 0.0f, 3.0f);
+      translation = translation.InitTranslation(0.0f, 0.0f, 3.0f);
       Matrix4f transformation = projection.matMultiply(translation.matMultiply(rotation));
+      minYVert = transformation.Transform(minYVert);
+      midYVert = transformation.Transform(midYVert);
+      maxYVert = transformation.Transform(maxYVert);
 
       SDL_RenderClear(renderer); //clear gpu buffer
-                                 //
-      //transform vertices
-      triangle.createTriangle(minVert, midVert, maxVert, triangle_area >= 0);
+      triangle.createTriangle(minYVert, midYVert, maxYVert, triangle_area >= 0);
       triangle.FillTriangle(framebuffer, width, height);
       //update cpu buffer here. aka function call
 

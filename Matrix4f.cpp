@@ -9,15 +9,17 @@
 #include <vector>
 #include <chrono>
 #include <cmath>
+#include "Vertex4.h"
+#include "Matrix4f.h"
 
 using namespace std;
 
-class Matrix4f{
-  private:
+//class Matrix4f{
+  //private:
   float m[4][4];
 
-  public: 
-  Matrix4f(){
+  //public: 
+  Matrix4f::Matrix4f(){
     for (int i = 0; i < 4; i++){
       for (int j = 0; j < 4; j++){
         m[i][j] = 0.0f;        
@@ -26,7 +28,7 @@ class Matrix4f{
    
   }
 
-  Matrix4f& InitIdentity() {
+  Matrix4f& Matrix4f::InitIdentity() {
     for (int i = 0; i < 4; i++){
       for (int j = 0; j < 4; j++){
         m[i][j] = i == j ? 1.0f : 0.0f;
@@ -35,21 +37,36 @@ class Matrix4f{
     return *this;
   }
 
-  Matrix4f InitPerspective(float fov, float asp_ratio, float zLow, float zHigh){
+  Matrix4f Matrix4f::InitScreenSpaceTransform(float halfWidth, float halfHeight){
     Matrix4f res;
+    res.InitIdentity();
+    res.m[0][0] = halfWidth; 
+    res.m[0][3] = halfWidth;
+    res.m[1][1] = halfHeight;
+    res.m[1][3] = halfHeight;
 
-    float halfFov = fov / 2.0;
-    
-    // tan(halffov) = x/z. this is the slope of the hypotenuse of the right triangle. multiplying by aspect ratio will scale this along the width. we dont include the asp ratio thing to y bc its wider than it is height
-
-    res.m[0][0] = 1.0 / (tan(halfFov) * asp_ratio);
-    res.m[1][1] = 1.0 / tan(halfFov);
-    res.m[2][2] = (-zLow - zHigh) / (zHigh - zLow);
-    res.m[2][3] = 2 * zLow * zHigh / (zHigh - zLow);
     return res;
   }
 
-  Matrix4f InitRotation(float angX, float angY, float angZ) {
+  Matrix4f Matrix4f::InitPerspective(float degreefov, float asp_ratio, float zLow, float zHigh){
+    Matrix4f res;
+    float fov = degreefov * M_PI / 180.0;
+    float halfFov = fov / 2.0;
+    
+    // tan(halffov) = x/z. this is the slope of the hypotenuse of the right triangle.
+    // multiplying by aspect ratio will scale this along the width. we dont include the asp ratio thing to y bc its more wide than it is tall
+    // i.e., for each unit of height, how much width? scale by this
+
+    res.m[0][0] = 1.0 / (tan(halfFov) * asp_ratio);
+    res.m[1][1] = 1.0 / tan(halfFov);
+    res.m[2][2] = (-zLow - zHigh) / (zLow - zHigh);
+    res.m[2][3] = 2 * zLow * zHigh / (zLow - zHigh);
+    res.m[3][2] = 1.0f;
+    //printf("%f", res.m[0][0]);
+    return res;
+  }
+
+  Matrix4f Matrix4f::InitRotation(float angX, float angY, float angZ) {
     Matrix4f rx;
     rx.InitIdentity();
     Matrix4f ry;
@@ -73,7 +90,7 @@ class Matrix4f{
     return rz.matMultiply(ry.matMultiply(rx));
   }
 
-  Matrix4f InitTranslation(float x, float y, float z){
+  Matrix4f Matrix4f::InitTranslation(float x, float y, float z){
     Matrix4f res;
     res.InitIdentity();
 
@@ -83,7 +100,17 @@ class Matrix4f{
     return res;
   }
 
-  Matrix4f matMultiply(Matrix4f x){
+  Vertex4 Matrix4f::Transform(Vertex4 r){
+    Vertex4 res(0,0,0,0);
+    for (int i = 0; i < 4; i++){
+      for (int j = 0; j < 4; j++){
+        res.v[i] += m[i][j] * r.v[j];
+      }
+    }
+    return res;
+  }
+  
+  Matrix4f Matrix4f::matMultiply(Matrix4f x){
     Matrix4f res;
     for (int i = 0; i < 4; i++){
       for (int j = 0; j < 4; j++){
@@ -94,4 +121,4 @@ class Matrix4f{
     }
     return res;
   }
-};
+//};

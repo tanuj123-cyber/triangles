@@ -153,6 +153,30 @@ Matrix4f.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/Matrix4f.cpp.s
 .PHONY : Matrix4f.cpp.s
 
+Vertex4.o: Vertex4.cpp.o
+.PHONY : Vertex4.o
+
+# target to build an object file
+Vertex4.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/Vertex4.cpp.o
+.PHONY : Vertex4.cpp.o
+
+Vertex4.i: Vertex4.cpp.i
+.PHONY : Vertex4.i
+
+# target to preprocess a source file
+Vertex4.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/Vertex4.cpp.i
+.PHONY : Vertex4.cpp.i
+
+Vertex4.s: Vertex4.cpp.s
+.PHONY : Vertex4.s
+
+# target to generate assembly for a file
+Vertex4.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/triangles.dir/build.make CMakeFiles/triangles.dir/Vertex4.cpp.s
+.PHONY : Vertex4.cpp.s
+
 triangles.o: triangles.cpp.o
 .PHONY : triangles.o
 
@@ -189,6 +213,9 @@ help:
 	@echo "... Matrix4f.o"
 	@echo "... Matrix4f.i"
 	@echo "... Matrix4f.s"
+	@echo "... Vertex4.o"
+	@echo "... Vertex4.i"
+	@echo "... Vertex4.s"
 	@echo "... triangles.o"
 	@echo "... triangles.i"
 	@echo "... triangles.s"

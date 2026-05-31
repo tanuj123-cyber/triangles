@@ -44,25 +44,26 @@ class ScanLineRasterization {
 }
   void createTriangle(Vertex4 minVer, Vertex4 midVer, Vertex4 maxVer, int side){
     Matrix4f screenSpaceTransform;
-    screenSpaceTransform = screenSpaceTransform.InitScreenSpaceTransform(width/2.0, height/2.0);
+    screenSpaceTransform.InitScreenSpaceTransform(width/2.0, height/2.0);
+    Vertex4 minVert = screenSpaceTransform.Transform(minVer);
+    minVert = minVert.PerspectiveDivide();
+    Vertex4 midVert = screenSpaceTransform.Transform(midVer);
+    midVert = midVert.PerspectiveDivide();
+    Vertex4 maxVert = screenSpaceTransform.Transform(maxVer);
+    maxVert = maxVert.PerspectiveDivide();
+    //_breakpoint();
 
-    Vertex4 minVert = screenSpaceTransform.Transform(minVer).PerspectiveDivide();
-    Vertex4 midVert = screenSpaceTransform.Transform(midVer).PerspectiveDivide();
-    Vertex4 maxVert = screenSpaceTransform.Transform(maxVer).PerspectiveDivide();
-
-    _breakpoint();
-
-   if (maxVert.GetY() < midVert.GetY()) {
+   if (maxVert.GetY() > midVert.GetY()) {
      Vertex4 temp = maxVert;
      maxVert = midVert;
      midVert = temp;
    }
-   if (midVert.GetY() < minVert.GetY()){
+   if (midVert.GetY() > minVert.GetY()){
      Vertex4 temp = midVert;
      midVert = minVert;
      minVert = temp;
    }
-   if (maxVert.GetY() < midVert.GetY()){
+   if (maxVert.GetY() > midVert.GetY()){
      Vertex4 temp = maxVert;
      maxVert = midVert;
      midVert = temp;
@@ -74,9 +75,11 @@ class ScanLineRasterization {
     vertex minV = {minVert.GetX(), minVert.GetY(), minVert.GetZ(), minVert.GetW()};
     vertex midV = {midVert.GetX(), midVert.GetY(), midVert.GetZ(), midVert.GetW()};
     vertex maxV = {maxVert.GetX(), maxVert.GetY(), maxVert.GetZ(), maxVert.GetW()};
+    
     convertToLine(minV, maxV, side);
     convertToLine(minV, midV, !side);
     convertToLine(midV, maxV, !side);
+
   }
 
   void convertToLine(vertex minY, vertex maxY, int side) {
@@ -84,41 +87,46 @@ class ScanLineRasterization {
 
     _breakpoint();
 
-    printf("-------------------\n");
+    //printf("-------------------\n");
 
-    int yDist = maxY.y - minY.y;
-    int xDist = maxY.x - minY.x;
+    int yDist = minY.y - maxY.y;
+    int xDist = minY.x - maxY.x;
 
     if (yDist < 0){
       return;
     }
+    if (yDist == 0){
+      int xMin = (int) xDist > 0 ? maxY.x : minY.x;
+      int xMax = (int) xDist < 0 ? minY.x : maxY.x;
+      scanBuffer[(int) minY.y * 2] = xMin;
+      scanBuffer[(int) minY.y * 2 + 1] = xMax;
+      return;
+    }
 
     float xStep = (float) xDist/yDist;
-    float currX = (float) minY.x;
+    float currX = (float) maxY.x;
 
-    for (int i = minY.y; i < maxY.y; i++){
+    for (int i = maxY.y; i < minY.y; i++){
       scanBuffer[i * 2 + side] = (int) currX;
 
-      printf("%d ", currX);
+      printf("%d ", (int) currX);
 
 
       currX += xStep;
     }
-      printf("\n");
+
+    printf("\n");
   }
 
   public: void FillTriangle(uint32_t *pixels, int w, int h){
-
     //clear cpu buffer
-    std::fill(pixels, pixels + w * h, 0xFF00FFFF);
+    std::fill(pixels, pixels + w * h, 0x00000000);
     
     //iterate through scanBuffer, fill out each row of pixels accordingly
     for (int i = 0; i < h; i ++){
-      //_breakpoint();
       int xMin = scanBuffer[i*2];
       int xMax = scanBuffer[i*2 + 1];
 
-      //assert(xMin < xMax);
 
       
       for (int j = xMin; j < xMax; j++) {
@@ -212,7 +220,7 @@ int main(int argc, char *argv[]){
       maxYVert = transformation.Transform(maxYVert);
 
       SDL_RenderClear(renderer); //clear gpu buffer
-      triangle.createTriangle(minYVert, midYVert, maxYVert, triangle_area >= 0);
+      triangle.createTriangle(minYVert, midYVert, maxYVert, triangle_area < 0);
       triangle.FillTriangle(framebuffer, width, height);
       //update cpu buffer here. aka function call
 

@@ -12,11 +12,20 @@
 #include "Vertex4.h"
 #include "Matrix4f.h"
 
+#define DEBUG 0
+
+#if DEBUG
+#define _breakpoint() __asm__ volatile ("int $3\n")
+#define _cond_break(cond) if(cond) __asm__ volatile ("int $3\n")
+#else
+#define _breakpoint() 
+#define _cond_break(cond) 
+#endif
+
 using namespace std;
 
 //class Matrix4f{
   //private:
-  float m[4][4];
 
   //public: 
   Matrix4f::Matrix4f(){
@@ -37,15 +46,15 @@ using namespace std;
     return *this;
   }
 
-  Matrix4f Matrix4f::InitScreenSpaceTransform(float halfWidth, float halfHeight){
-    Matrix4f res;
-    res.InitIdentity();
-    res.m[0][0] = halfWidth; 
-    res.m[0][3] = halfWidth;
-    res.m[1][1] = halfHeight;
-    res.m[1][3] = halfHeight;
+  Matrix4f& Matrix4f::InitScreenSpaceTransform(float halfWidth, float halfHeight){
+    this->InitIdentity();
+    _breakpoint();
+    m[0][0] = halfWidth; 
+    m[0][3] = halfWidth;
+    m[1][1] = -halfHeight;
+    m[1][3] = halfHeight;
 
-    return res;
+    return *this;
   }
 
   Matrix4f Matrix4f::InitPerspective(float degreefov, float asp_ratio, float zLow, float zHigh){
@@ -102,11 +111,13 @@ using namespace std;
 
   Vertex4 Matrix4f::Transform(Vertex4 r){
     Vertex4 res(0,0,0,0);
+    _breakpoint();
     for (int i = 0; i < 4; i++){
       for (int j = 0; j < 4; j++){
         res.v[i] += m[i][j] * r.v[j];
       }
     }
+    _breakpoint();
     return res;
   }
   

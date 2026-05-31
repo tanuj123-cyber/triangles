@@ -6,7 +6,6 @@
 #include <cmath>
 
 class Matrix4f {
-private:
     float m[4][4];
 
 public:
@@ -14,7 +13,7 @@ public:
 
     Matrix4f& InitIdentity();
 
-    Matrix4f InitScreenSpaceTransform(float halfWidth, float halfHeight);
+    Matrix4f& InitScreenSpaceTransform(float halfWidth, float halfHeight);
     
     Matrix4f InitPerspective(float fov, float asp_ratio, float zLow, float zHigh);
 
